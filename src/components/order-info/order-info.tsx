@@ -1,11 +1,19 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useEffect, useState } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient } from '@utils-types';
+import { TIngredient, TOrder } from '@utils-types';
+import { useDispatch, useSelector } from '../../services/store';
+import { ingredientsSelector } from '../../services/slice/ingredientsSlice';
+import {
+  getOrderByNum,
+  orderModalSelector,
+  ordersSelector
+} from '../../services/slice/orderSlice';
+import { useParams } from 'react-router-dom';
 
 export const OrderInfo: FC = () => {
   /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
+  /*const orderData = {
     createdAt: '',
     ingredients: [],
     _id: '',
@@ -13,11 +21,37 @@ export const OrderInfo: FC = () => {
     name: '',
     updatedAt: 'string',
     number: 0
-  };
+  };*/
 
-  const ingredients: TIngredient[] = [];
+  const dispatch = useDispatch();
+  const param = useParams();
+  const number = Number(param.number);
+  const [orderData, setOrderData] = useState<TOrder | null>(null);
+  const ingredients: TIngredient[] = useSelector(ingredientsSelector);
+  const modalData = useSelector(orderModalSelector);
+  const data = useSelector(ordersSelector);
 
+  //const ingredients: TIngredient[] = [];
   /* Готовим данные для отображения */
+  useEffect(() => {
+    if (number) {
+      const order: TOrder | undefined = data.find(
+        (item) => item.number === number
+      );
+      if (order) {
+        setOrderData(order);
+      } else {
+        dispatch(getOrderByNum(number));
+      }
+    }
+  }, [dispatch, number]);
+
+  useEffect(() => {
+    if (modalData && modalData.number === number) {
+      setOrderData(modalData);
+    }
+  }, [modalData, number]);
+
   const orderInfo = useMemo(() => {
     if (!orderData || !ingredients.length) return null;
 
@@ -60,7 +94,7 @@ export const OrderInfo: FC = () => {
   }, [orderData, ingredients]);
 
   if (!orderInfo) {
-    return <Preloader />;
+    return;
   }
 
   return <OrderInfoUI orderInfo={orderInfo} />;
