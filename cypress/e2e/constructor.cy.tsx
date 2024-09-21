@@ -6,7 +6,7 @@ describe('Тест конструктора бургеров', () => {
     cy.intercept('GET', '/api/ingredients', { fixture: 'ingredients.json' }).as(
       'getIngredients'
     );
-    cy.visit('/');
+    cy.visit('http://localhost:4000/');
     cy.wait('@getIngredients');
   });
 
@@ -20,10 +20,10 @@ describe('Тест конструктора бургеров', () => {
     cy.get('#modals').children().should('have.length', 0);
     cy.get('[data-ingredient="bun"]:first-of-type').click();
     cy.get('#modals').should('have.length', 1);
-    cy.get('#modals #modalclose').click();
+    cy.get('#modals button:first-of-type').click();
     cy.get('#modals').children().should('have.length', 0);
   });
-  
+
   it('Закрытие по клику на оверлей', () => {
     cy.get('#modals').children().should('have.length', 0);
     cy.get('[data-ingredient="bun"]:first-of-type').click();
@@ -33,26 +33,30 @@ describe('Тест конструктора бургеров', () => {
 });
 
 // тестируем заказ
-describe('Проверка добавления ингридиента в BurgerConstructor',()=>{
+describe('Проверка добавления ингридиента в BurgerConstructor', () => {
   beforeEach(() => {
-    cy.intercept('GET', '/api/auth/user', { fixture: 'user.json' }).as('getUser');
-    cy.intercept('POST', '/api/orders', { fixture: 'order.json' }).as('postOrder');
+    cy.intercept('GET', '/api/auth/user', { fixture: 'user.json' }).as(
+      'getUser'
+    );
+    cy.intercept('POST', '/api/orders', { fixture: 'order.json' }).as(
+      'postOrder'
+    );
 
     cy.setCookie('accessToken', authTokens.accessToken);
     localStorage.setItem('refreshToken', authTokens.refreshToken);
     cy.wait(500);
-    cy.visit('/');
+    cy.visit('http://localhost:4000/');
     cy.wait('@getUser');
   });
 
   const burgerCollect =
-  '.constructor-element > .constructor-element__row > .constructor-element__text';
+    '.constructor-element > .constructor-element__row > .constructor-element__text';
   const bun = `[data-ingredient=bun]`;
   const main = `[data-ingredient=main]`;
   const sauce = `[data-ingredient=sauce]`;
   const commonButton = `.common_button`;
 
-  it('Добавление булок и ингредиентов в заказ', ()=>{
+  it('Добавление булок и ингредиентов в заказ', () => {
     cy.request('/api/ingredients');
     cy.get(`${bun} > ${commonButton}`).first().click();
     cy.get(`${main} > ${commonButton}`).first().click();
@@ -65,7 +69,6 @@ describe('Проверка добавления ингридиента в Burger
       bunBottom: cy.get(burgerCollect).last()
     };
 
-
     burgerConstructor.bunTop.contains('Краторная булка N-200i (верх)');
     burgerConstructor.mainIngredient.contains(
       'Биокотлета из марсианской Магнолии'
@@ -75,25 +78,28 @@ describe('Проверка добавления ингридиента в Burger
   });
 
   it('Все этапы создания заказа', () => {
-
     cy.get(`${bun} > ${commonButton}`).first().click();
     cy.get(`${main} > ${commonButton}`).first().click();
     cy.get(`${sauce} > ${commonButton}`).first().click();
 
-    cy.get('#root > div > main > div > section:nth-child(2) > div > button').click();
-   
+    cy.get(
+      '#root > div > main > div > section:nth-child(2) > div > button'
+    ).click();
+
     const orderModal = cy.get('#modals > div:first-child');
     const orderNumber = orderModal.get('div:nth-child(2) > h2');
-    
+
     orderNumber.contains(orderData.order.number);
     orderModal.get('div:first-child > div:first-child > button > svg').click();
-    
+
     cy.get('#modals').children().should('have.length', 0);
-    
+
     const burgerCunstructor = {
       constructorBunTop: cy.get('div > section:nth-child(2) > div'),
       constructoMainIngredient: cy.get('div > section:nth-child(2) > ul > div'),
-      constructorBunBottom: cy.get('div > section:nth-child(2) > div:nth-child(3)')
+      constructorBunBottom: cy.get(
+        'div > section:nth-child(2) > div:nth-child(3)'
+      )
     };
 
     burgerCunstructor.constructorBunTop.contains('Выберите булки');
@@ -101,10 +107,7 @@ describe('Проверка добавления ингридиента в Burger
     burgerCunstructor.constructorBunBottom.contains('Выберите булки');
   });
   afterEach(() => {
-  cy.clearAllCookies();
-  localStorage.removeItem('refreshToken');
-})
-})
-
-  
-
+    cy.clearAllCookies();
+    localStorage.removeItem('refreshToken');
+  });
+});
