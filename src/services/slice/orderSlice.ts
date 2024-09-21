@@ -7,7 +7,7 @@ import {
   import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
   import { TOrder } from '@utils-types';
   
-  interface IOrderState {
+  export interface IOrderState {
     order: TOrder | null;
     name: string | null;
     error: string | null | undefined;
@@ -137,4 +137,4 @@ import {
   } = orderSlice.selectors;
   
   export const { resetOrder } = orderSlice.actions;
-  
+  export default orderSlice.reducer;

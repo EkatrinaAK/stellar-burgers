@@ -71,3 +71,4 @@ export const {
   moveIngredientDown,
   deleteIngredient
 } = constructorSlice.actions;
+export default constructorSlice.reducer;

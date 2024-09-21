@@ -16,17 +16,7 @@ import { UserSelector } from '../../services/slice/userSlice';
 import { useNavigate } from 'react-router-dom';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  /*const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
-  };
-
-  const orderRequest = false;
-  const orderModalData = null;*/
-
+ 
   const dispatch = useDispatch();
   const constructorItems = useSelector(stateSelector);
   const orderRequest = useSelector(isLoadingSelector);
