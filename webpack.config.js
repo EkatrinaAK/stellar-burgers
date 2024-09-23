@@ -5,6 +5,11 @@ const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   entry: path.resolve(__dirname, './src/index.tsx'),
+  devServer: {
+    client: {
+      overlay: false
+    }
+  },
   module: {
     rules: [
       {
@@ -48,9 +53,9 @@ module.exports = {
     ]
   },
   plugins: [
-    new ESLintPlugin({
+    /* new ESLintPlugin({
       extensions: ['.js', '.jsx', '.ts', '.tsx']
-    }),
+    }),*/
     new HtmlWebpackPlugin({
       template: './public/index.html'
     }),

@@ -17,7 +17,7 @@ import {
     error: string | null | undefined;
   };
   
-  const initialState: TUserState = {
+  export const initialState: TUserState = {
     user: null,
     isAuthChecked: false,
     error: null
@@ -29,6 +29,7 @@ import {
       const response = await registerUserApi(data);
       setCookie('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
+     
       return response;
     }
   );
@@ -39,6 +40,7 @@ import {
       const response = await loginUserApi(data);
       setCookie('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
+      
       return response;
     }
   );
