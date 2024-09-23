@@ -1,34 +1,11 @@
-import orderReducer, { IOrderState, resetOrder,postOrder } from './orderSlice';
+import orderReducer, { IOrderState, resetOrder,postOrder,initialState } from './orderSlice';
 import { order } from '../../../testData';
 import { TNewOrderResponse } from '@api';
 
 describe('Тесты синхронных экшенов', () => {
-    
-    const initialState: IOrderState = {
-        order: null,
-        name: null,
-        error: null,
-        isLoading: false,
-        orders: [],
-        orderModal: [],
-        profileOrders: [],
-        total: null,
-        totalToday: null
-      };
-
   test('Проверяем очистку заказа', () => {
     const newOrder = orderReducer(initialState, resetOrder());
-    expect(newOrder).toEqual({
-      order: null,
-      name: null,
-      error: null,
-      isLoading: false,
-      orders: [],
-      orderModal: [],
-      profileOrders: [],
-      total: null,
-      totalToday: null
-    });
+    expect(newOrder).toEqual(initialState);
   });
 
     test('Тестируем отправку запроса (pending)', async () => {

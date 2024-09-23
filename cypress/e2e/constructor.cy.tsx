@@ -1,24 +1,29 @@
 import * as authTokens from '../fixtures/token.json';
 import * as orderData from '../fixtures/order.json';
 
+
+const BUN_SELECTOR = `[data-ingredient=bun]`;
+const MAIN_SELECTOR = `[data-ingredient=main]`;
+const SAUCE_SELECTOR = `[data-ingredient=sauce]`;
+
 describe('Тест конструктора бургеров', () => {
   beforeEach(() => {
     cy.intercept('GET', '/api/ingredients', { fixture: 'ingredients.json' }).as(
       'getIngredients'
     );
-    cy.visit('http://localhost:4000/');
+    cy.visit('/');
     cy.wait('@getIngredients');
   });
 
   it('Список ингредиентов доступен для выбора', () => {
-    cy.get(`[data-ingredient="bun"]`).should('have.length.at.least', 1);
-    cy.get('[data-ingredient="main"]').should('have.length.at.least', 1);
-    cy.get('[data-ingredient="sauce"]').should('have.length.at.least', 1);
+    cy.get(BUN_SELECTOR).should('have.length.at.least', 1);
+    cy.get(MAIN_SELECTOR).should('have.length.at.least', 1);
+    cy.get(SAUCE_SELECTOR).should('have.length.at.least', 1);
   });
 
   it('Открытие модального окна ингредиента и закрытие по клику на крестик', () => {
     cy.get('#modals').children().should('have.length', 0);
-    cy.get('[data-ingredient="bun"]:first-of-type').click();
+    cy.get(`${BUN_SELECTOR}:first-of-type`).click();
     cy.get('#modals').should('have.length', 1);
     cy.get('#modals button:first-of-type').click();
     cy.get('#modals').children().should('have.length', 0);
@@ -26,7 +31,7 @@ describe('Тест конструктора бургеров', () => {
 
   it('Закрытие по клику на оверлей', () => {
     cy.get('#modals').children().should('have.length', 0);
-    cy.get('[data-ingredient="bun"]:first-of-type').click();
+    cy.get(`${BUN_SELECTOR}:first-of-type`).click();
     cy.get('#modals>div:nth-of-type(2)').click({ force: true });
     cy.get('#modals').children().should('have.length', 0);
   });
@@ -45,22 +50,18 @@ describe('Проверка добавления ингридиента в Burger
     cy.setCookie('accessToken', authTokens.accessToken);
     localStorage.setItem('refreshToken', authTokens.refreshToken);
     cy.wait(500);
-    cy.visit('http://localhost:4000/');
+    cy.visit('/');
     cy.wait('@getUser');
   });
 
-  const burgerCollect =
-    '.constructor-element > .constructor-element__row > .constructor-element__text';
-  const bun = `[data-ingredient=bun]`;
-  const main = `[data-ingredient=main]`;
-  const sauce = `[data-ingredient=sauce]`;
+  const burgerCollect ='.constructor-element > .constructor-element__row > .constructor-element__text';
   const commonButton = `.common_button`;
 
   it('Добавление булок и ингредиентов в заказ', () => {
     cy.request('/api/ingredients');
-    cy.get(`${bun} > ${commonButton}`).first().click();
-    cy.get(`${main} > ${commonButton}`).first().click();
-    cy.get(`${sauce} > ${commonButton}`).first().click();
+    cy.get(`${BUN_SELECTOR} > ${commonButton}`).first().click();
+    cy.get(`${MAIN_SELECTOR} > ${commonButton}`).first().click();
+    cy.get(`${SAUCE_SELECTOR} > ${commonButton}`).first().click();
 
     const burgerConstructor = {
       bunTop: cy.get(burgerCollect).first(),
@@ -78,18 +79,18 @@ describe('Проверка добавления ингридиента в Burger
   });
 
   it('Все этапы создания заказа', () => {
-    cy.get(`${bun} > ${commonButton}`).first().click();
-    cy.get(`${main} > ${commonButton}`).first().click();
-    cy.get(`${sauce} > ${commonButton}`).first().click();
+    
+    cy.get(`${BUN_SELECTOR} > ${commonButton}`).first().click();
+    cy.get(`${MAIN_SELECTOR} > ${commonButton}`).first().click();
+    cy.get(`${SAUCE_SELECTOR} > ${commonButton}`).first().click();
 
-    cy.get(
-      '#root > div > main > div > section:nth-child(2) > div > button'
-    ).click();
+    cy.get( '#root > div > main > div > section:nth-child(2) > div > button').click();
 
     const orderModal = cy.get('#modals > div:first-child');
     const orderNumber = orderModal.get('div:nth-child(2) > h2');
-
-    orderNumber.contains(orderData.order.number);
+  
+    orderNumber.contains(orderData.order.number).should('have.text','48808');
+    
     orderModal.get('div:first-child > div:first-child > button > svg').click();
 
     cy.get('#modals').children().should('have.length', 0);
@@ -110,4 +111,4 @@ describe('Проверка добавления ингридиента в Burger
     cy.clearAllCookies();
     localStorage.removeItem('refreshToken');
   });
-});
+})

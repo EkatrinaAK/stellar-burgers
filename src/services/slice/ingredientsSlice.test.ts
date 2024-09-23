@@ -1,16 +1,10 @@
-import ingredientsReducer, { TIngredientsState } from './ingredientsSlice';
+import ingredientsReducer, { TIngredientsState, initialState} from './ingredientsSlice';
 
 import { buns } from '../../../testData';
 import { fetchIngredients } from './ingredientsSlice';
 
 describe('Тесты асинхронных экшенов', () => {
   describe('Тестируем fetchIngredients', () => {
-    
-    const initialState: TIngredientsState = {
-      ingredients: [],
-      isLoading: false,
-      error: null
-    };
     
     test('тестируем отправку запроса (pending)', async () => {
       const newState = ingredientsReducer(
